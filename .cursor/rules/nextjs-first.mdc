@@ -1,0 +1,33 @@
+---
+description: Always build new features as Next.js (TypeScript) web app first
+alwaysApply: true
+---
+
+# Next.js 우선 개발 규칙
+
+## 기본 원칙
+
+- 새로운 기능/앱/페이지/대시보드는 **항상 Next.js(App Router) + React + TypeScript** 기반으로 구현한다.
+- Python/Streamlit/Flask/FastAPI 등 **Python 웹앱은 새로 만들지 않는다**. (이미 존재하는 레거시 유지보수는 예외)
+- 저장/조회가 필요한 데이터는 **Supabase(Postgres) 우선**. 로컬 파일(CSV 등)은 데모/임시 목적이 아니면 사용하지 않는다.
+
+## Next.js 기술 스택 표준
+
+- **Next.js App Router**: `app/` 디렉터리 사용을 기본으로 한다.
+- **TypeScript 필수**: `any` 금지(암묵적 any 포함). 데이터 구조는 `interface` 또는 `type`으로 명확히 정의한다.
+- **UI**: Tailwind CSS 우선 사용. 매직 넘버(임의 수치) 지양, 디자인 토큰/클래스 조합을 우선한다.
+- **서버 코드**: `app/api/**/route.ts`(Route Handlers) 또는 Server Actions로 작성한다.
+- **환경 변수**: 비밀키/토큰/패스워드는 코드에 하드코딩 금지. `.env.local`(로컬) / 배포 환경변수로만 관리한다.
+
+## Supabase 사용 규칙(웹)
+
+- DB 읽기/쓰기는 기본적으로 **서버(Server Actions / Route Handler)** 에서 `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` 로 수행한다.
+- 브라우저에서 직접 Supabase를 써야 하는 경우에만 `NEXT_PUBLIC_SUPABASE_URL` + `NEXT_PUBLIC_SUPABASE_ANON_KEY` 를 고려한다.
+- `SUPABASE_SERVICE_ROLE_KEY` 는 **절대 클라이언트 번들/공개 레포에 넣지 않는다**. 운영에서는 RLS·최소 권한 정책을 반드시 검토한다.
+
+## 산출물 형태
+
+- 신규 작업은 “실행 가능한 Next.js 프로젝트” 형태로 추가한다.
+  - `package.json`, `next.config.*`, `tsconfig.json`, `app/` 포함
+  - `README.md`에 로컬 실행/배포 방법 작성
+

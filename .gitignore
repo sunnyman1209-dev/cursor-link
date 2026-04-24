@@ -1,5 +1,9 @@
 .env
+.env.local
 *.csv
+node_modules/
+.next/
+out/
 __pycache__/
 .python-version
 .venv/

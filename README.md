@@ -1,35 +1,98 @@
-# 학급 정부 시스템 (Streamlit)
+# 학급 정부 시스템 (Next.js)
 
-학급 예산 배정/결재/부처별 신청/감찰 리포트를 한 화면에서 관리하는 Streamlit 앱입니다.
+학급 **예산/결재**, **상벌점**, **감사 로그**를 Next.js + Supabase로 관리합니다.
 
-## 실행 방법 (로컬)
-
-1) 의존성 설치
+## 로컬 실행
 
 ```bash
-python -m venv .venv
-# Windows PowerShell
-.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-```
-
-2) 환경변수 설정
-
-- `.env.example`을 참고해 **`.env`**를 생성하거나,
-- OS 환경변수에 `APP_PASSWORDS`, `APP_DEPT_PASSWORDS`를 설정하세요.
-
-> 주의: 비밀번호는 보안상 레포에 커밋하지 않습니다.
-
-3) 실행
-
-```bash
-streamlit run app.py
+npm i
+npm run dev
 ```
 
 ## 환경변수
 
-- `APP_PASSWORDS`: 역할별 1차 비밀번호(JSON)
-- `APP_DEPT_PASSWORDS`: 부처별 2차 비밀번호(JSON)
-- `DB_CONFIG`: 예산/벌금/지출 저장 CSV 파일명(기본 `config_v4.csv`)
-- `LOG_FILE`: 결재/신청 로그 CSV 파일명(기본 `transactions_v4.csv`)
+`.env.example`을 참고해 `.env.local`을 만들거나, Vercel Environment Variables에 설정하세요.
 
+- `APP_PASSWORDS`: 역할별 비밀번호(JSON) — `교사/총무/부장/감사원`
+- `APP_DEPT_PASSWORDS`: 부처별 2차 비밀번호(JSON)
+- `SESSION_SECRET`: 세션 쿠키 서명용 비밀값(길고 랜덤하게)
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY` (**서버에서만** 사용)
+- `CLASS_CODE` (예: `1-1`)
+
+> `SUPABASE_SERVICE_ROLE_KEY`는 브라우저에 노출하면 안 됩니다. 이 프로젝트는 서버 액션/Route Handler에서만 사용합니다.
+
+## Vercel 배포
+
+- GitHub 레포를 Vercel에 Import
+- 위 환경변수를 Vercel에 동일하게 설정
+
+## Supabase SQL (필수)
+
+Supabase SQL Editor에서 아래를 실행하세요.
+
+```sql
+-- 상벌점
+create table if not exists students (
+  id uuid primary key default gen_random_uuid(),
+  class_code text not null,
+  name text not null,
+  number int,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists students_class_code_idx on students (class_code);
+
+create table if not exists point_ledger (
+  id uuid primary key default gen_random_uuid(),
+  class_code text not null,
+  student_id uuid not null references students(id) on delete cascade,
+  delta int not null,
+  reason text not null,
+  created_at timestamptz not null default now(),
+  created_by text
+);
+
+create index if not exists point_ledger_student_idx on point_ledger (student_id);
+create index if not exists point_ledger_class_code_idx on point_ledger (class_code);
+
+-- 예산/결재
+create table if not exists budget_accounts (
+  class_code text not null,
+  department text not null,
+  allocated_amount bigint not null default 0,
+  spent_amount bigint not null default 0,
+  fine_amount bigint not null default 0,
+  updated_at timestamptz not null default now(),
+  primary key (class_code, department)
+);
+
+create table if not exists budget_requests (
+  id uuid primary key default gen_random_uuid(),
+  class_code text not null,
+  department text not null,
+  item text not null,
+  amount bigint not null,
+  status text not null default '대기', -- 대기/승인/반려
+  created_at timestamptz not null default now()
+);
+
+create index if not exists budget_requests_class_status_idx on budget_requests (class_code, status);
+
+create table if not exists budget_events (
+  id uuid primary key default gen_random_uuid(),
+  class_code text not null,
+  created_at timestamptz not null default now(),
+  actor_role text not null,
+  action text not null,
+  department text,
+  amount bigint,
+  item text,
+  status text,
+  note text
+);
+
+create index if not exists budget_events_class_created_idx on budget_events (class_code, created_at desc);
+```
+
+> 운영 환경에서는 RLS/정책을 반드시 설계하세요. (교실용 PoC라면 일단 비공개 배포 + 강한 비밀번호 조합을 권장)
