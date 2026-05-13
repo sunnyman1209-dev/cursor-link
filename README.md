@@ -33,6 +33,13 @@ npm run dev
 
 가져오기 바로가기: `https://vercel.com/new/import?s=https://github.com/sunnyman1209-dev/cursor-link` → **Root Directory** → `Edit` → `brainstorming-techniques-presentation` 입력 → **Deploy**.
 
+### 배포 후 404일 때 (Vercel 설정)
+
+- **Build & Development Settings**에서 **Output Directory**가 비어 있는지 확인합니다. (Next 기본 배포는 비워 둠. `out` 등으로 바꾸면 404가 날 수 있음)
+- **Install Command**는 비우거나 `npm install`
+- **Framework Preset**은 **Next.js**
+- 변경 후 **Redeploy** (Deployments → 해당 배포 → Redeploy)
+
 ## Supabase SQL (필수)
 
 Supabase SQL Editor에서 아래를 실행하세요.
