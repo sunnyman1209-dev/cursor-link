@@ -27,6 +27,10 @@ npm run dev
 - GitHub 레포를 Vercel에 Import
 - 위 환경변수를 Vercel에 동일하게 설정
 
+## `brainstorming-techniques-presentation/` (발상 기법 슬라이드)
+
+같은 레포 안의 **별도 Next.js 앱**입니다. 기존 `cursor-link` Vercel 프로젝트(루트)와는 무관하게, Vercel에서 **새 Project**를 만들고 **Root Directory**를 `brainstorming-techniques-presentation` 로 지정하면 `main` 푸시 시 자동 배포됩니다.
+
 ## Supabase SQL (필수)
 
 Supabase SQL Editor에서 아래를 실행하세요.
