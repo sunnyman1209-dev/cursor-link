@@ -31,6 +31,8 @@ npm run dev
 
 같은 레포 안의 **별도 Next.js 앱**입니다. 기존 `cursor-link` Vercel 프로젝트(루트)와는 무관하게, Vercel에서 **새 Project**를 만들고 **Root Directory**를 `brainstorming-techniques-presentation` 로 지정하면 `main` 푸시 시 자동 배포됩니다.
 
+가져오기 바로가기: `https://vercel.com/new/import?s=https://github.com/sunnyman1209-dev/cursor-link` → **Root Directory** → `Edit` → `brainstorming-techniques-presentation` 입력 → **Deploy**.
+
 ## Supabase SQL (필수)
 
 Supabase SQL Editor에서 아래를 실행하세요.
