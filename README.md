@@ -40,6 +40,22 @@ npm run dev
 - **Framework Preset**은 **Next.js**
 - 변경 후 **Redeploy** (Deployments → 해당 배포 → Redeploy)
 
+### UI 대신 API로 「루트 외부 파일 포함」 끄기
+
+이 PC/에이전트에는 `VERCEL_TOKEN`이 없어 대신 실행할 스크립트를 넣어 두었습니다.
+
+**로컬 PowerShell (토큰은 채팅에 붙이지 말 것):**
+
+```powershell
+cd C:\Users\sunny\Desktop\cursor-link
+$env:VERCEL_TOKEN="여기에_토큰"
+node brainstorming-techniques-presentation/scripts/vercel-disable-outside-root.mjs
+```
+
+자동으로 못 찾으면: `$env:VERCEL_PROJECT_NAME="vercel-프로젝트-이름"` 추가.
+
+**GitHub Actions:** 저장소 **Settings → Secrets → Actions**에 `VERCEL_TOKEN` 추가 후, **Actions** 탭에서 `Vercel — 루트 외부 파일 포함 끄기` 워크플로를 **Run workflow**.
+
 ## Supabase SQL (필수)
 
 Supabase SQL Editor에서 아래를 실행하세요.
